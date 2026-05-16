@@ -5,17 +5,24 @@ import JSZip from 'jszip';
 import MarkitdownWorker from './markitdown.worker.js?worker';
 let markitdownWorker = new MarkitdownWorker();
 
-let currentTaskResolver = null;
-let currentTaskRejector = null;
+const taskMap = new Map();
+let nextTaskId = 1;
 
 markitdownWorker.onmessage = (e) => {
-  const { type, payload, error } = e.data;
+  const { type, payload, error, taskId } = e.data;
   if (type === 'READY') {
     console.log("MarkItDown worker is ready");
-  } else if (type === 'SUCCESS' && currentTaskResolver) {
-    currentTaskResolver(payload);
-  } else if (type === 'ERROR' && currentTaskRejector) {
-    currentTaskRejector(error);
+    return;
+  }
+
+  if (taskId && taskMap.has(taskId)) {
+    const { resolve, reject } = taskMap.get(taskId);
+    taskMap.delete(taskId);
+    if (type === 'SUCCESS') {
+      resolve(payload);
+    } else if (type === 'ERROR') {
+      reject(new Error(error));
+    }
   }
 };
 
@@ -84,9 +91,9 @@ self.onmessage = async (e) => {
     self.postMessage({ type: 'PROGRESS', payload: 'Formatting with MarkItDown...' });
 
     const markdown = await new Promise((resolve, reject) => {
-      currentTaskResolver = resolve;
-      currentTaskRejector = reject;
-      markitdownWorker.postMessage({ content: extractedContent, format });
+      const taskId = nextTaskId++;
+      taskMap.set(taskId, { resolve, reject });
+      markitdownWorker.postMessage({ taskId, content: extractedContent, format });
     });
 
     self.postMessage({ type: 'SUCCESS', payload: markdown });

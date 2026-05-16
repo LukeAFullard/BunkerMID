@@ -49,11 +49,15 @@
 
   <div class="drop-zone" id="drop-zone">
     <p>Drag and drop a file here, or click to select</p>
-    <input type="file" id="file-input" style="display: none" accept=".docx,.xlsx,.pptx,.html,.htm,.txt" />
+    <input type="file" id="file-input" style="display: none" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt" />
   </div>
 
   <div class="loader" id="loader">Processing...</div>
 
   <textarea id="output" readonly placeholder="Extracted markdown will appear here..."></textarea>
+
+  <div style="margin-top: 1rem; text-align: right;">
+    <button id="download-btn" disabled style="padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer;">Download Markdown</button>
+  </div>
 </body>
 </html>
