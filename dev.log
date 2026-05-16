@@ -1,0 +1,14 @@
+
+> bunkermid@1.0.0 dev
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+Re-optimizing dependencies because lockfile has changed
+
+  VITE v5.4.21  ready in 256 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+9:06:19 PM [vite] ✨ new dependencies optimized: mammoth/mammoth.browser.js, xlsx, jszip
+9:06:19 PM [vite] ✨ new dependencies optimized: pyodide
+9:06:19 PM [vite] ✨ optimized dependencies changed. reloading
