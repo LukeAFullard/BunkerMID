@@ -25,6 +25,10 @@ extractionWorker.onmessage = (e) => {
 
 dropZone.addEventListener('click', () => fileInput.click());
 
+fileInput.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
 dropZone.addEventListener('dragover', (e) => {
   e.preventDefault();
   dropZone.style.background = '#e9ecef';
