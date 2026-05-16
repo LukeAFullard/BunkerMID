@@ -1,7 +1,9 @@
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const output = document.getElementById('output');
+const loaderContainer = document.getElementById('loader-container');
 const loader = document.getElementById('loader');
+const progressBar = document.getElementById('progress-bar');
 const downloadBtn = document.getElementById('download-btn');
 
 import ExtractionWorker from './extraction.worker.js?worker';
@@ -12,14 +14,21 @@ extractionWorker.onmessage = (e) => {
   const { type, payload, error } = e.data;
   if (type === 'SUCCESS') {
     output.value = payload;
-    loader.style.display = 'none';
+    loaderContainer.style.display = 'none';
+    progressBar.value = 100;
     downloadBtn.disabled = false;
   } else if (type === 'ERROR') {
     output.value = 'Error: ' + error;
-    loader.style.display = 'none';
+    loaderContainer.style.display = 'none';
+    progressBar.value = 100;
     downloadBtn.disabled = true;
   } else if (type === 'PROGRESS') {
     loader.innerText = payload;
+    if (payload.includes('Extracting') || payload.includes('Reading')) {
+      progressBar.value = 30;
+    } else if (payload.includes('Formatting')) {
+      progressBar.value = 70;
+    }
   }
 };
 
@@ -68,7 +77,8 @@ function handleFile(file) {
     output.value = 'Error: File too large (max 10MB)';
     return;
   }
-  loader.style.display = 'block';
+  loaderContainer.style.display = 'block';
+  progressBar.value = 10;
   loader.innerText = 'Extracting data...';
   output.value = '';
   downloadBtn.disabled = true;

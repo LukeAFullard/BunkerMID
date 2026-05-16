@@ -52,7 +52,10 @@
     <input type="file" id="file-input" style="display: none" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt" />
   </label>
 
-  <div class="loader" id="loader">Processing...</div>
+  <div class="loader" id="loader-container">
+    <div id="loader">Processing...</div>
+    <progress id="progress-bar" value="0" max="100" style="width: 100%; margin-top: 0.5rem;"></progress>
+  </div>
 
   <textarea id="output" readonly placeholder="Extracted markdown will appear here..."></textarea>
 
