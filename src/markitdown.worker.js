@@ -72,7 +72,7 @@ pyodideReadyPromise = initPyodide().then(pyodide => {
 });
 
 self.onmessage = async (e) => {
-  const { content, format } = e.data;
+  const { content, format, taskId } = e.data;
   try {
     const pyodide = await pyodideReadyPromise;
     pyodide.globals.set("current_content", content);
@@ -80,8 +80,8 @@ self.onmessage = async (e) => {
 
     const result = await pyodide.runPythonAsync(`convert_content(current_content, current_format)`);
 
-    self.postMessage({ type: 'SUCCESS', payload: result });
+    self.postMessage({ type: 'SUCCESS', payload: result, taskId });
   } catch (err) {
-    self.postMessage({ type: 'ERROR', error: err.message });
+    self.postMessage({ type: 'ERROR', error: err.message, taskId });
   }
 };
