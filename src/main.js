@@ -44,6 +44,10 @@ extractionWorker.onmessage = (e) => {
   }
 };
 
+extractionWorker.onerror = (err) => {
+  dropZone.classList.add('disabled');
+  dropText.innerText = 'Error loading extraction worker: ' + err.message;
+};
 
 
 
