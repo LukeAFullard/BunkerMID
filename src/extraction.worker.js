@@ -2,8 +2,7 @@ import * as mammoth from 'mammoth/mammoth.browser.js';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 
-import MarkitdownWorker from './markitdown.worker.js?worker';
-let markitdownWorker = new MarkitdownWorker();
+const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
 
 const taskMap = new Map();
 let nextTaskId = 1;

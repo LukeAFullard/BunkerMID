@@ -7,8 +7,7 @@ const progressBar = document.getElementById('progress-bar');
 const downloadBtn = document.getElementById('download-btn');
 const dropText = document.getElementById('drop-text');
 
-import ExtractionWorker from './extraction.worker.js?worker';
-let extractionWorker = new ExtractionWorker();
+const extractionWorker = new Worker(new URL('./extraction.worker.js', import.meta.url), { type: 'module' });
 let currentFileName = 'document';
 
 extractionWorker.onmessage = (e) => {
