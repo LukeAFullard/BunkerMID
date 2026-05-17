@@ -6,6 +6,10 @@ self.addEventListener('unhandledrejection', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker unhandled rejection: " + (e.reason ? e.reason.message || e.reason : "unknown reason"), isSystemError: true });
 });
 
+import * as mammoth from 'mammoth/mammoth.browser.js';
+import * as XLSX from 'xlsx';
+import JSZip from 'jszip';
+
 const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
 
 const taskMap = new Map();
@@ -57,16 +61,12 @@ self.onmessage = async (e) => {
     let format = 'html';
 
     if (type === 'docx') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Loading DOCX extractor...' });
-      const mammoth = await import('mammoth/mammoth.browser.js');
       self.postMessage({ type: 'PROGRESS', payload: 'Extracting DOCX...' });
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
       extractedContent = result.value; // The generated HTML
     }
     else if (type === 'xlsx' || type === 'csv') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Loading XLSX extractor...' });
-      const XLSX = await import('xlsx');
       self.postMessage({ type: 'PROGRESS', payload: 'Extracting XLSX...' });
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
@@ -76,9 +76,6 @@ self.onmessage = async (e) => {
       extractedContent = XLSX.utils.sheet_to_html(worksheet);
     }
     else if (type === 'pptx') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Loading PPTX extractor...' });
-      const JSZipModule = await import('jszip');
-      const JSZip = JSZipModule.default || JSZipModule;
       self.postMessage({ type: 'PROGRESS', payload: 'Extracting PPTX...' });
       const arrayBuffer = await file.arrayBuffer();
       const zip = await JSZip.loadAsync(arrayBuffer);
