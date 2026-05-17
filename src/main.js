@@ -5,6 +5,7 @@ const loaderContainer = document.getElementById('loader-container');
 const loader = document.getElementById('loader');
 const progressBar = document.getElementById('progress-bar');
 const downloadBtn = document.getElementById('download-btn');
+const dropText = document.getElementById('drop-text');
 
 import ExtractionWorker from './extraction.worker.js?worker';
 let extractionWorker = new ExtractionWorker();
@@ -12,6 +13,12 @@ let currentFileName = 'document';
 
 extractionWorker.onmessage = (e) => {
   const { type, payload, error } = e.data;
+  if (type === 'READY') {
+    dropZone.classList.remove('disabled');
+    fileInput.disabled = false;
+    dropText.innerText = 'Drag and drop a file here, or click to select';
+    return;
+  }
   if (type === 'SUCCESS') {
     output.value = payload;
     loaderContainer.style.display = 'none';
