@@ -3,11 +3,15 @@ import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodi
 let pyodideReadyPromise = null;
 
 async function initPyodide() {
+  self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
   const pyodide = await loadPyodide({
     indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
   });
+
+  self.postMessage({ type: 'PROGRESS', payload: 'Loading Python package manager (micropip)...' });
   await pyodide.loadPackage("micropip");
 
+  self.postMessage({ type: 'PROGRESS', payload: 'Installing Core Dependencies...' });
   await pyodide.runPythonAsync(`
 import micropip
 import sys
@@ -48,7 +52,10 @@ sys.modules['magika'] = MockMagikaModule()
 
 # Install MarkItDown without dependencies (since we mocked magika)
 await micropip.install("markitdown", deps=False)
+  `);
 
+  self.postMessage({ type: 'PROGRESS', payload: 'Initializing MarkItDown Engine...' });
+  await pyodide.runPythonAsync(`
 from markitdown import MarkItDown
 import io
 
