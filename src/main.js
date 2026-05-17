@@ -10,8 +10,20 @@ const dropText = document.getElementById('drop-text');
 const extractionWorker = new Worker(new URL('./extraction.worker.js', import.meta.url), { type: 'module' });
 let currentFileName = 'document';
 let isExtracting = false;
+let initTimeout = null;
+
+// Fallback timeout to ensure we don't hang silently if the worker fails to even start parsing
+initTimeout = setTimeout(() => {
+  dropZone.classList.add('disabled');
+  dropText.innerText = 'Error: Worker initialization timed out. Please check your browser compatibility or adblockers.';
+}, 10000);
 
 extractionWorker.onmessage = (e) => {
+  if (initTimeout) {
+    clearTimeout(initTimeout);
+    initTimeout = null;
+  }
+
   const { type, payload, error, isSystemError } = e.data;
   if (type === 'READY') {
     dropZone.classList.remove('disabled');
@@ -57,6 +69,10 @@ extractionWorker.onmessage = (e) => {
 };
 
 extractionWorker.onerror = (err) => {
+  if (initTimeout) {
+    clearTimeout(initTimeout);
+    initTimeout = null;
+  }
   dropZone.classList.add('disabled');
   dropText.innerText = 'Error loading extraction worker: ' + (err.message || "Failed to load worker script");
 };
