@@ -19,6 +19,11 @@ extractionWorker.onmessage = (e) => {
     dropText.innerText = 'Drag and drop a file here, or click to select';
     return;
   }
+  if (type === 'ERROR' && !output.value) {
+    dropZone.classList.add('disabled');
+    dropText.innerText = 'Error: ' + error;
+    return;
+  }
   if (type === 'SUCCESS') {
     output.value = payload;
     loaderContainer.style.display = 'none';

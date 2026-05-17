@@ -15,6 +15,11 @@ markitdownWorker.onmessage = (e) => {
     self.postMessage({ type: "READY" });
     return;
   }
+  if (type === 'ERROR' && !taskId) {
+    console.error("MarkItDown worker failed to initialize", error);
+    self.postMessage({ type: "ERROR", error });
+    return;
+  }
 
   if (taskId && taskMap.has(taskId)) {
     const { resolve, reject } = taskMap.get(taskId);

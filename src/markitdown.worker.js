@@ -13,7 +13,7 @@ import micropip
 import sys
 
 # Install core dependencies of MarkItDown
-await micropip.install(["beautifulsoup4", "charset-normalizer", "defusedxml", "markdownify", "requests"])
+await micropip.install(["beautifulsoup4", "charset-normalizer", "defusedxml", "markdownify", "requests", "urllib3", "certifi", "idna", "six", "soupsieve"])
 
 # Mock Magika to avoid onnxruntime issues
 class MockMagikaOutput:
