@@ -1,9 +1,20 @@
-import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs";
+self.addEventListener('error', (e) => {
+  self.postMessage({ type: 'ERROR', error: "Worker critical error: " + (e.message || "unknown error"), isSystemError: true });
+});
+
+self.addEventListener('unhandledrejection', (e) => {
+  self.postMessage({ type: 'ERROR', error: "Worker unhandled rejection: " + (e.reason ? e.reason.message || e.reason : "unknown reason"), isSystemError: true });
+});
 
 let pyodideReadyPromise = null;
 
 async function initPyodide() {
   self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
+
+  // Dynamically import Pyodide to ensure worker starts immediately on mobile
+  const pyodideModule = await import("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs");
+  const loadPyodide = pyodideModule.loadPyodide;
+
   const pyodide = await loadPyodide({
     indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
   });

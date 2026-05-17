@@ -1,3 +1,11 @@
+self.addEventListener('error', (e) => {
+  self.postMessage({ type: 'ERROR', error: "Extraction worker critical error: " + (e.message || "unknown error"), isSystemError: true });
+});
+
+self.addEventListener('unhandledrejection', (e) => {
+  self.postMessage({ type: 'ERROR', error: "Extraction worker unhandled rejection: " + (e.reason ? e.reason.message || e.reason : "unknown reason"), isSystemError: true });
+});
+
 import * as mammoth from 'mammoth/mammoth.browser.js';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
@@ -41,7 +49,8 @@ markitdownWorker.onmessage = (e) => {
 };
 
 markitdownWorker.onerror = (err) => {
-  self.postMessage({ type: "ERROR", error: "Worker script failed to load or parse: " + err.message, isSystemError: true });
+  const errMsg = err.message || "Failed to load worker script (Check adblockers or network connectivity)";
+  self.postMessage({ type: "ERROR", error: "Worker script error: " + errMsg, isSystemError: true });
 };
 
 self.onmessage = async (e) => {
