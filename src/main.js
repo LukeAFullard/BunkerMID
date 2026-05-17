@@ -8,9 +8,12 @@ const downloadBtn = document.getElementById('download-btn');
 const dropText = document.getElementById('drop-text');
 
 const extractionWorker = new Worker(new URL('./extraction.worker.js', import.meta.url), { type: 'module' });
+const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
+
 let currentFileName = 'document';
 let isExtracting = false;
 let initTimeout = null;
+let currentTaskId = 1;
 
 // Fallback timeout to ensure we don't hang silently if the worker fails to even start parsing
 initTimeout = setTimeout(() => {
@@ -18,7 +21,7 @@ initTimeout = setTimeout(() => {
   dropText.innerText = 'Error: Worker initialization timed out. Please check your browser compatibility or adblockers.';
 }, 10000);
 
-extractionWorker.onmessage = (e) => {
+markitdownWorker.onmessage = (e) => {
   if (initTimeout) {
     clearTimeout(initTimeout);
     initTimeout = null;
@@ -54,6 +57,48 @@ extractionWorker.onmessage = (e) => {
     progressBar.value = 100;
     downloadBtn.disabled = false;
     isExtracting = false;
+  } else if (type === 'PROGRESS') {
+    if (!isExtracting) {
+      dropText.innerText = payload;
+    } else {
+      loader.innerText = payload;
+      if (payload.includes('Extracting') || payload.includes('Reading')) {
+        progressBar.value = 30;
+      } else if (payload.includes('Formatting')) {
+        progressBar.value = 70;
+      }
+    }
+  }
+};
+
+markitdownWorker.onerror = (err) => {
+  if (initTimeout) {
+    clearTimeout(initTimeout);
+    initTimeout = null;
+  }
+  dropZone.classList.add('disabled');
+  dropText.innerText = 'Error loading markitdown worker: ' + (err.message || "Failed to load worker script");
+};
+
+extractionWorker.onmessage = (e) => {
+  const { type, payload, error, isSystemError } = e.data;
+
+  if (type === 'EXTRACTION_SUCCESS') {
+    // Send to markitdown worker for formatting
+    const taskId = currentTaskId++;
+    markitdownWorker.postMessage({ taskId, content: payload.content, format: payload.format });
+  } else if (type === 'ERROR') {
+    if (isSystemError || !isExtracting) {
+      dropZone.classList.add('disabled');
+      fileInput.disabled = true;
+      dropText.innerText = 'Error: ' + error;
+    } else {
+      output.value = 'Error: ' + error;
+      loaderContainer.style.display = 'none';
+      progressBar.value = 100;
+      downloadBtn.disabled = true;
+      isExtracting = false;
+    }
   } else if (type === 'PROGRESS') {
     if (!isExtracting) {
       dropText.innerText = payload;

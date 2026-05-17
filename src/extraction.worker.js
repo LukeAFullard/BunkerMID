@@ -10,48 +10,6 @@ import * as mammoth from 'mammoth/mammoth.browser.js';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 
-const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
-
-const taskMap = new Map();
-let nextTaskId = 1;
-
-markitdownWorker.onmessage = (e) => {
-  const { type, payload, error, taskId } = e.data;
-  if (type === 'READY') {
-    console.log("MarkItDown worker is ready");
-    self.postMessage({ type: "READY" });
-    return;
-  }
-  if (type === 'ERROR' && !taskId) {
-    console.error("MarkItDown worker failed to initialize", error);
-    self.postMessage({ type: "ERROR", error, isSystemError: true });
-    return;
-  }
-
-  if (type === 'PROGRESS' && !taskId) {
-    self.postMessage({ type: "PROGRESS", payload });
-    return;
-  }
-
-  if (e.data === undefined) {
-    return;
-  }
-
-  if (taskId && taskMap.has(taskId)) {
-    const { resolve, reject } = taskMap.get(taskId);
-    taskMap.delete(taskId);
-    if (type === 'SUCCESS') {
-      resolve(payload);
-    } else if (type === 'ERROR') {
-      reject(new Error(error));
-    }
-  }
-};
-
-markitdownWorker.onerror = (err) => {
-  const errMsg = err.message || "Failed to load worker script (Check adblockers or network connectivity)";
-  self.postMessage({ type: "ERROR", error: "Worker script error: " + errMsg, isSystemError: true });
-};
 
 self.onmessage = async (e) => {
   const { file, type } = e.data;
@@ -115,15 +73,7 @@ self.onmessage = async (e) => {
       throw new Error("Unsupported file type: " + type);
     }
 
-    self.postMessage({ type: 'PROGRESS', payload: 'Formatting with MarkItDown...' });
-
-    const markdown = await new Promise((resolve, reject) => {
-      const taskId = nextTaskId++;
-      taskMap.set(taskId, { resolve, reject });
-      markitdownWorker.postMessage({ taskId, content: extractedContent, format });
-    });
-
-    self.postMessage({ type: 'SUCCESS', payload: markdown });
+    self.postMessage({ type: 'EXTRACTION_SUCCESS', payload: { content: extractedContent, format } });
   } catch (error) {
     self.postMessage({ type: 'ERROR', error: error.message });
   }

@@ -11,19 +11,37 @@ let pyodideReadyPromise = null;
 async function initPyodide() {
   self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
 
-  // Dynamically import Pyodide to ensure worker starts immediately on mobile
-  const pyodideModule = await import("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs");
-  const loadPyodide = pyodideModule.loadPyodide;
+  let loadPyodide;
+  try {
+    // Dynamically import Pyodide to ensure worker starts immediately on mobile
+    const pyodideModule = await import("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs");
+    loadPyodide = pyodideModule.loadPyodide;
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', error: "Failed to dynamically import Pyodide: " + err.message, isSystemError: true });
+    throw err;
+  }
 
-  const pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
-  });
+  let pyodide;
+  try {
+    pyodide = await loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+    });
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', error: "Failed to initialize Pyodide: " + err.message, isSystemError: true });
+    throw err;
+  }
 
-  self.postMessage({ type: 'PROGRESS', payload: 'Loading Python package manager (micropip)...' });
-  await pyodide.loadPackage("micropip");
+  try {
+    self.postMessage({ type: 'PROGRESS', payload: 'Loading Python package manager (micropip)...' });
+    await pyodide.loadPackage("micropip");
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', error: "Failed to load micropip: " + err.message, isSystemError: true });
+    throw err;
+  }
 
-  self.postMessage({ type: 'PROGRESS', payload: 'Installing Core Dependencies...' });
-  await pyodide.runPythonAsync(`
+  try {
+    self.postMessage({ type: 'PROGRESS', payload: 'Installing Core Dependencies...' });
+    await pyodide.runPythonAsync(`
 import micropip
 import sys
 
@@ -64,9 +82,14 @@ sys.modules['magika'] = MockMagikaModule()
 # Install MarkItDown without dependencies (since we mocked magika)
 await micropip.install("markitdown", deps=False)
   `);
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', error: "Failed to install Python dependencies: " + err.message, isSystemError: true });
+    throw err;
+  }
 
-  self.postMessage({ type: 'PROGRESS', payload: 'Initializing MarkItDown Engine...' });
-  await pyodide.runPythonAsync(`
+  try {
+    self.postMessage({ type: 'PROGRESS', payload: 'Initializing MarkItDown Engine...' });
+    await pyodide.runPythonAsync(`
 from markitdown import MarkItDown
 import io
 
@@ -77,7 +100,12 @@ def convert_content(content, format="html"):
     ext = "." + format
     result = md.convert_stream(stream, file_extension=ext)
     return result.text_content
-  `);
+    `);
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', error: "Failed to initialize MarkItDown Engine: " + err.message, isSystemError: true });
+    throw err;
+  }
+
   return pyodide;
 }
 
