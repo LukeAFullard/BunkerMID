@@ -9,30 +9,39 @@ const dropText = document.getElementById('drop-text');
 
 const extractionWorker = new Worker(new URL('./extraction.worker.js', import.meta.url), { type: 'module' });
 let currentFileName = 'document';
+let isExtracting = false;
 
 extractionWorker.onmessage = (e) => {
-  const { type, payload, error } = e.data;
+  const { type, payload, error, isSystemError } = e.data;
   if (type === 'READY') {
     dropZone.classList.remove('disabled');
     fileInput.disabled = false;
     dropText.innerText = 'Drag and drop a file here, or click to select';
     return;
   }
-  if (type === 'ERROR' && !output.value) {
-    dropZone.classList.add('disabled');
-    dropText.innerText = 'Error: ' + error;
-    return;
+
+  if (type === 'ERROR') {
+    if (isSystemError || !isExtracting) {
+      dropZone.classList.add('disabled');
+      fileInput.disabled = true;
+      dropText.innerText = 'Error: ' + error;
+      return;
+    } else {
+      output.value = 'Error: ' + error;
+      loaderContainer.style.display = 'none';
+      progressBar.value = 100;
+      downloadBtn.disabled = true;
+      isExtracting = false;
+      return;
+    }
   }
+
   if (type === 'SUCCESS') {
     output.value = payload;
     loaderContainer.style.display = 'none';
     progressBar.value = 100;
     downloadBtn.disabled = false;
-  } else if (type === 'ERROR') {
-    output.value = 'Error: ' + error;
-    loaderContainer.style.display = 'none';
-    progressBar.value = 100;
-    downloadBtn.disabled = true;
+    isExtracting = false;
   } else if (type === 'PROGRESS') {
     loader.innerText = payload;
     if (payload.includes('Extracting') || payload.includes('Reading')) {
@@ -98,6 +107,7 @@ function handleFile(file) {
   output.value = '';
   downloadBtn.disabled = true;
 
+  isExtracting = true;
   currentFileName = file.name.replace(/\.[^/.]+$/, "");
   extractionWorker.postMessage({ file, type: file.name.split('.').pop().toLowerCase() });
 }
