@@ -21,6 +21,10 @@ markitdownWorker.onmessage = (e) => {
     return;
   }
 
+  if (e.data === undefined) {
+    return;
+  }
+
   if (taskId && taskMap.has(taskId)) {
     const { resolve, reject } = taskMap.get(taskId);
     taskMap.delete(taskId);
@@ -30,6 +34,10 @@ markitdownWorker.onmessage = (e) => {
       reject(new Error(error));
     }
   }
+};
+
+markitdownWorker.onerror = (err) => {
+  self.postMessage({ type: "ERROR", error: "Worker script failed to load or parse: " + err.message });
 };
 
 self.onmessage = async (e) => {
