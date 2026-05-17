@@ -11,17 +11,19 @@ let pyodideReadyPromise = null;
 async function initPyodide() {
   self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
 
+  let loadPyodide;
   try {
-    // Synchronously import Pyodide for classic web workers
-    importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js");
+    // Dynamically import Pyodide
+    const pyodideModule = await import("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs");
+    loadPyodide = pyodideModule.loadPyodide;
   } catch (err) {
-    self.postMessage({ type: 'ERROR', error: "Failed to load Pyodide script: " + err.message, isSystemError: true });
+    self.postMessage({ type: 'ERROR', error: "Failed to dynamically import Pyodide: " + err.message, isSystemError: true });
     throw err;
   }
 
   let pyodide;
   try {
-    pyodide = await self.loadPyodide({
+    pyodide = await loadPyodide({
       indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
     });
   } catch (err) {
