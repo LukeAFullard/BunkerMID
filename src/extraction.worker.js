@@ -12,6 +12,7 @@ markitdownWorker.onmessage = (e) => {
   const { type, payload, error, taskId } = e.data;
   if (type === 'READY') {
     console.log("MarkItDown worker is ready");
+    self.postMessage({ type: "READY" });
     return;
   }
 

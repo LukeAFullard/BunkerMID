@@ -22,6 +22,11 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+    .drop-zone.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      pointer-events: none;
+    }
     .drop-zone:hover {
       background: #e9ecef;
       border-color: #adb5bd;
@@ -47,9 +52,9 @@
   <h1>BunkerMID</h1>
   <p>Convert DOCX, XLSX, PPTX, HTML, and TXT to Markdown natively in your browser.</p>
 
-  <label class="drop-zone" id="drop-zone" for="file-input" style="display: block;">
-    <p>Drag and drop a file here, or click to select</p>
-    <input type="file" id="file-input" style="position: absolute; opacity: 0; width: 0; height: 0;" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt" />
+  <label class="drop-zone disabled" id="drop-zone" for="file-input" style="display: block;">
+    <p id="drop-text">Downloading AI extraction engine (~10MB)...</p>
+    <input type="file" id="file-input" style="position: absolute; opacity: 0; width: 0; height: 0;" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt" disabled />
   </label>
 
   <div class="loader" id="loader-container">
