@@ -1,5 +1,4 @@
 import ExtractionWorker from './extraction.worker.js?worker';
-import MarkitdownWorker from './markitdown.worker.js?worker';
 
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
@@ -11,7 +10,7 @@ const downloadBtn = document.getElementById('download-btn');
 const dropText = document.getElementById('drop-text');
 
 const extractionWorker = new ExtractionWorker();
-const markitdownWorker = new MarkitdownWorker();
+const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
 
 let currentFileName = 'document';
 let isExtracting = false;
