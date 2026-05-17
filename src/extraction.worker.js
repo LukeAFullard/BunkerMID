@@ -16,7 +16,7 @@ markitdownWorker.onmessage = (e) => {
   }
   if (type === 'ERROR' && !taskId) {
     console.error("MarkItDown worker failed to initialize", error);
-    self.postMessage({ type: "ERROR", error });
+    self.postMessage({ type: "ERROR", error, isSystemError: true });
     return;
   }
 
@@ -36,7 +36,7 @@ markitdownWorker.onmessage = (e) => {
 };
 
 markitdownWorker.onerror = (err) => {
-  self.postMessage({ type: "ERROR", error: "Worker script failed to load or parse: " + err.message });
+  self.postMessage({ type: "ERROR", error: "Worker script failed to load or parse: " + err.message, isSystemError: true });
 };
 
 self.onmessage = async (e) => {
