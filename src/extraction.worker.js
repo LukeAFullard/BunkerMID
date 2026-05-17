@@ -20,6 +20,11 @@ markitdownWorker.onmessage = (e) => {
     return;
   }
 
+  if (type === 'PROGRESS' && !taskId) {
+    self.postMessage({ type: "PROGRESS", payload });
+    return;
+  }
+
   if (e.data === undefined) {
     return;
   }

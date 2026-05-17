@@ -43,11 +43,15 @@ extractionWorker.onmessage = (e) => {
     downloadBtn.disabled = false;
     isExtracting = false;
   } else if (type === 'PROGRESS') {
-    loader.innerText = payload;
-    if (payload.includes('Extracting') || payload.includes('Reading')) {
-      progressBar.value = 30;
-    } else if (payload.includes('Formatting')) {
-      progressBar.value = 70;
+    if (!isExtracting) {
+      dropText.innerText = payload;
+    } else {
+      loader.innerText = payload;
+      if (payload.includes('Extracting') || payload.includes('Reading')) {
+        progressBar.value = 30;
+      } else if (payload.includes('Formatting')) {
+        progressBar.value = 70;
+      }
     }
   }
 };
