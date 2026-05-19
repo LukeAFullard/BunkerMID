@@ -18,18 +18,31 @@ let initTimeout = null;
 let currentTaskId = 1;
 
 // Fallback timeout to ensure we don't hang silently if the worker fails to even start parsing
-initTimeout = setTimeout(() => {
-  dropZone.classList.add('disabled');
-  dropText.innerText = 'Error: Worker initialization timed out. Please check your browser compatibility or adblockers.';
-}, 10000);
-
-markitdownWorker.onmessage = (e) => {
+function resetInitTimeout() {
   if (initTimeout) {
     clearTimeout(initTimeout);
-    initTimeout = null;
+  }
+  initTimeout = setTimeout(() => {
+    dropZone.classList.add('disabled');
+    dropText.innerText = 'Error: Worker initialization timed out. Please check your browser compatibility or adblockers.';
+  }, 10000);
+}
+
+resetInitTimeout();
+
+markitdownWorker.onmessage = (e) => {
+  const { type, payload, error, isSystemError } = e.data;
+
+  if (initTimeout) {
+    if (type === 'READY' || type === 'ERROR') {
+      clearTimeout(initTimeout);
+      initTimeout = null;
+    } else if (type === 'PROGRESS') {
+      // Reset timeout on progress so slow connections don't falsely trigger the error
+      resetInitTimeout();
+    }
   }
 
-  const { type, payload, error, isSystemError } = e.data;
   if (type === 'READY') {
     dropZone.classList.remove('disabled');
     fileInput.disabled = false;
