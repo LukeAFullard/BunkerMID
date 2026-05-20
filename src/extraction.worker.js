@@ -6,7 +6,7 @@ self.addEventListener('unhandledrejection', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker unhandled rejection: " + (e.reason ? e.reason.message || e.reason : "unknown reason"), isSystemError: true });
 });
 
-import * as mammoth from 'mammoth/mammoth.browser.js';
+import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 
