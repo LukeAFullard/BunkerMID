@@ -8,6 +8,11 @@ self.addEventListener('unhandledrejection', (e) => {
 
 let pyodideReadyPromise = null;
 
+// Send heartbeat so main thread doesn't time out during slow downloads
+const heartbeatInterval = setInterval(() => {
+  self.postMessage({ type: 'PROGRESS', payload: 'Downloading AI extraction engine (~10MB)...' });
+}, 5000);
+
 async function initPyodide() {
   self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
 
@@ -110,11 +115,13 @@ def convert_content(content, format="html"):
 }
 
 pyodideReadyPromise = initPyodide().then(pyodide => {
+  clearInterval(heartbeatInterval);
   self.postMessage({ type: 'READY' });
   return pyodide;
 }).catch(err => {
+  clearInterval(heartbeatInterval);
   console.error("Pyodide init failed:", err);
-  self.postMessage({ type: 'ERROR', error: "Pyodide init failed: " + err.message });
+  self.postMessage({ type: 'ERROR', error: "Pyodide init failed: " + err.message, isSystemError: true });
 });
 
 self.onmessage = async (e) => {
