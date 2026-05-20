@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/BunkerMID/'
+  base: '/BunkerMID/',
+  worker: {
+    format: 'es'
+  }
 });

@@ -1,3 +1,7 @@
+import * as mammoth from 'mammoth';
+import * as XLSX from 'xlsx';
+import JSZip from 'jszip';
+
 self.addEventListener('error', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker critical error: " + (e.message || "unknown error"), isSystemError: true });
 });
@@ -5,10 +9,6 @@ self.addEventListener('error', (e) => {
 self.addEventListener('unhandledrejection', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker unhandled rejection: " + (e.reason ? e.reason.message || e.reason : "unknown reason"), isSystemError: true });
 });
-
-import * as mammoth from 'mammoth';
-import * as XLSX from 'xlsx';
-import JSZip from 'jszip';
 
 
 self.onmessage = async (e) => {
