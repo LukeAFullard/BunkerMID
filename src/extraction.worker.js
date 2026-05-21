@@ -1,6 +1,10 @@
 import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 self.addEventListener('error', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker critical error: " + (e.message || "unknown error"), isSystemError: true });
@@ -67,6 +71,19 @@ self.onmessage = async (e) => {
     else if (type === 'txt') {
       self.postMessage({ type: 'PROGRESS', payload: 'Reading TXT...' });
       extractedContent = await file.text();
+      format = 'txt';
+    }
+    else if (type === 'pdf') {
+      self.postMessage({ type: 'PROGRESS', payload: 'Extracting PDF...' });
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+      let text = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str).join(' ') + "\n\n";
+      }
+      extractedContent = text;
       format = 'txt';
     }
     else {
