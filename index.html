@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BunkerMID v0.15 - Browser-Native Markdown Extraction</title>
+  <title>BunkerMID v0.16 - Browser-Native Markdown Extraction</title>
   <script src="./coi-serviceworker.js"></script>
   <script type="module" src="./src/main.js"></script>
   <style>
@@ -50,12 +50,12 @@
   </style>
 </head>
 <body>
-  <h1>BunkerMID v0.15</h1>
-  <p>Convert DOCX, XLSX, PPTX, HTML, and TXT to Markdown natively in your browser.</p>
+  <h1>BunkerMID v0.16</h1>
+  <p>Convert DOCX, XLSX, PPTX, HTML, PDF, and TXT to Markdown natively in your browser.</p>
 
   <label class="drop-zone disabled" id="drop-zone" for="file-input" style="display: block;">
     <p id="drop-text">Downloading AI extraction engine (~10MB)...</p>
-    <input type="file" id="file-input" style="position: absolute; opacity: 0; width: 0; height: 0;" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt" disabled />
+    <input type="file" id="file-input" style="position: absolute; opacity: 0; width: 0; height: 0;" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt,.pdf" disabled />
   </label>
 
   <div class="loader" id="loader-container">
