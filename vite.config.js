@@ -9,5 +9,11 @@ export default defineConfig({
     alias: {
       'mammoth': 'mammoth/mammoth.browser.js'
     }
+  },
+  optimizeDeps: {
+    include: ['pdfjs-dist']
+  },
+  build: {
+    target: 'esnext'
   }
 });

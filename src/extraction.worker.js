@@ -6,6 +6,15 @@ import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
+// Suppress the fake worker warning as we are already in a worker
+const originalWarn = console.warn;
+console.warn = function (msg) {
+  if (msg && typeof msg === 'string' && msg.includes('Setting up fake worker')) {
+    return;
+  }
+  originalWarn.apply(console, arguments);
+};
+
 self.addEventListener('error', (e) => {
   self.postMessage({ type: 'ERROR', error: "Extraction worker critical error: " + (e.message || "unknown error"), isSystemError: true });
 });
