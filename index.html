@@ -54,12 +54,12 @@
   <p>Convert DOCX, XLSX, PPTX, HTML, PDF, and TXT to Markdown natively in your browser.</p>
 
   <label class="drop-zone disabled" id="drop-zone" for="file-input" style="display: block;">
-    <p id="drop-text">Downloading AI extraction engine (~10MB)...</p>
+    <p id="drop-text">Downloading AI extraction engine (~10MB) (0%)...</p>
     <input type="file" id="file-input" style="position: absolute; opacity: 0; width: 0; height: 0;" accept=".docx,.xlsx,.csv,.pptx,.html,.htm,.txt,.pdf" disabled />
   </label>
 
   <div class="loader" id="loader-container">
-    <div id="loader">Processing...</div>
+    <div id="loader">Extracting data (10%)...</div>
     <progress id="progress-bar" value="0" max="100" style="width: 100%; margin-top: 0.5rem;"></progress>
   </div>
 
