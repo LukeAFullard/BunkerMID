@@ -25,7 +25,7 @@ function resetInitTimeout() {
   initTimeout = setTimeout(() => {
     dropZone.classList.add('disabled');
     dropText.innerText = 'Error: Worker initialization timed out. Please check your browser compatibility or adblockers.';
-  }, 10000);
+  }, 30000);
 }
 
 resetInitTimeout();
@@ -77,10 +77,14 @@ markitdownWorker.onmessage = (e) => {
       dropText.innerText = payload;
     } else {
       loader.innerText = payload;
-      if (payload.includes('Extracting') || payload.includes('Reading')) {
-        progressBar.value = 30;
-      } else if (payload.includes('Formatting')) {
-        progressBar.value = 70;
+      if (e.data.progress !== undefined) {
+        progressBar.value = e.data.progress;
+      } else {
+        if (payload.includes('Extracting') || payload.includes('Reading')) {
+          progressBar.value = 30;
+        } else if (payload.includes('Formatting')) {
+          progressBar.value = 70;
+        }
       }
     }
   }
@@ -119,10 +123,14 @@ extractionWorker.onmessage = (e) => {
       dropText.innerText = payload;
     } else {
       loader.innerText = payload;
-      if (payload.includes('Extracting') || payload.includes('Reading')) {
-        progressBar.value = 30;
-      } else if (payload.includes('Formatting')) {
-        progressBar.value = 70;
+      if (e.data.progress !== undefined) {
+        progressBar.value = e.data.progress;
+      } else {
+        if (payload.includes('Extracting') || payload.includes('Reading')) {
+          progressBar.value = 30;
+        } else if (payload.includes('Formatting')) {
+          progressBar.value = 70;
+        }
       }
     }
   }
@@ -183,7 +191,7 @@ function handleFile(file) {
   }
   loaderContainer.style.display = 'block';
   progressBar.value = 10;
-  loader.innerText = 'Extracting data...';
+  loader.innerText = 'Extracting data (10%)...';
   output.value = '';
   downloadBtn.disabled = true;
 

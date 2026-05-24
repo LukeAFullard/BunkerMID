@@ -9,7 +9,7 @@ self.addEventListener('unhandledrejection', (e) => {
 let pyodideReadyPromise = null;
 
 async function initPyodide() {
-  self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime...' });
+  self.postMessage({ type: 'PROGRESS', payload: 'Loading Pyodide runtime (25%)...' });
 
   let loadPyodide;
   try {
@@ -32,7 +32,7 @@ async function initPyodide() {
   }
 
   try {
-    self.postMessage({ type: 'PROGRESS', payload: 'Loading Python package manager (micropip)...' });
+    self.postMessage({ type: 'PROGRESS', payload: 'Loading Python package manager (50%)...' });
     await pyodide.loadPackage("micropip");
   } catch (err) {
     self.postMessage({ type: 'ERROR', error: "Failed to load micropip: " + err.message, isSystemError: true });
@@ -40,7 +40,7 @@ async function initPyodide() {
   }
 
   try {
-    self.postMessage({ type: 'PROGRESS', payload: 'Installing Core Dependencies...' });
+    self.postMessage({ type: 'PROGRESS', payload: 'Installing Core Dependencies (75%)...' });
     await pyodide.runPythonAsync(`
 import micropip
 import sys
@@ -88,7 +88,7 @@ await micropip.install("markitdown", deps=False)
   }
 
   try {
-    self.postMessage({ type: 'PROGRESS', payload: 'Initializing MarkItDown Engine...' });
+    self.postMessage({ type: 'PROGRESS', payload: 'Initializing MarkItDown Engine (90%)...' });
     await pyodide.runPythonAsync(`
 from markitdown import MarkItDown
 import io
@@ -121,6 +121,7 @@ self.onmessage = async (e) => {
   const { content, format, taskId } = e.data;
   try {
     const pyodide = await pyodideReadyPromise;
+    self.postMessage({ type: 'PROGRESS', payload: 'Formatting Markdown (70%)...', progress: 70, taskId });
     pyodide.globals.set("current_content", content);
     pyodide.globals.set("current_format", format);
 

@@ -32,13 +32,13 @@ self.onmessage = async (e) => {
     let format = 'html';
 
     if (type === 'docx') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Extracting DOCX...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Extracting DOCX (30%)...', progress: 30 });
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
       extractedContent = result.value; // The generated HTML
     }
     else if (type === 'xlsx' || type === 'csv') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Extracting XLSX...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Extracting XLSX (30%)...', progress: 30 });
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
       // Convert first sheet to HTML
@@ -47,7 +47,7 @@ self.onmessage = async (e) => {
       extractedContent = XLSX.utils.sheet_to_html(worksheet);
     }
     else if (type === 'pptx') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Extracting PPTX...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Extracting PPTX (30%)...', progress: 30 });
       const arrayBuffer = await file.arrayBuffer();
       const zip = await JSZip.loadAsync(arrayBuffer);
       let text = "";
@@ -74,16 +74,16 @@ self.onmessage = async (e) => {
       extractedContent = text;
     }
     else if (type === 'html' || type === 'htm') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Reading HTML...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Reading HTML (30%)...', progress: 30 });
       extractedContent = await file.text();
     }
     else if (type === 'txt') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Reading TXT...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Reading TXT (30%)...', progress: 30 });
       extractedContent = await file.text();
       format = 'txt';
     }
     else if (type === 'pdf') {
-      self.postMessage({ type: 'PROGRESS', payload: 'Extracting PDF...' });
+      self.postMessage({ type: 'PROGRESS', payload: 'Extracting PDF (30%)...', progress: 30 });
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
       let text = "";
