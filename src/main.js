@@ -9,8 +9,11 @@ const progressBar = document.getElementById('progress-bar');
 const downloadBtn = document.getElementById('download-btn');
 const dropText = document.getElementById('drop-text');
 
-const extractionWorker = new Worker(new URL('./extraction.worker.js', import.meta.url), { type: 'module' });
-const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
+import ExtractionWorker from './extraction.worker.js?worker';
+import MarkitdownWorker from './markitdown.worker.js?worker';
+
+const extractionWorker = new ExtractionWorker();
+const markitdownWorker = new MarkitdownWorker();
 
 let currentFileName = 'document';
 let isExtracting = false;
