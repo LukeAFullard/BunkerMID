@@ -1,0 +1,9 @@
+127.0.0.1 - - [25/May/2026 08:24:23] "GET /BunkerMID/ HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 08:24:23] "GET /BunkerMID/coi-serviceworker.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 08:24:23] "GET /BunkerMID/assets/index-WQw8WzdG.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 08:24:24] "GET /BunkerMID/assets/extraction.worker-e6BfmVeH.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 08:24:24] "GET /BunkerMID/assets/markitdown.worker-JyO2OORs.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/May/2026 08:24:24] "GET /BunkerMID/coi-serviceworker.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2026 08:24:24] "GET /BunkerMID/ HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2026 08:24:25] "GET /BunkerMID/coi-serviceworker.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2026 08:24:28] "GET /BunkerMID/coi-serviceworker.js HTTP/1.1" 304 -
