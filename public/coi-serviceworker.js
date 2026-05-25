@@ -27,6 +27,11 @@ if (typeof window === 'undefined') {
             return;
         }
 
+        // Fix: Bypass intercepting Pyodide/CDN requests to preserve native browser Content-Length handling for progress calculation
+        if (r.url.includes('cdn.jsdelivr.net') || r.url.includes('pyodide') || r.url.endsWith('.wasm')) {
+            return;
+        }
+
         const request = (coepCredentialless && r.mode === "no-cors")
             ? new Request(r, {
                 credentials: "omit",
