@@ -5,11 +5,6 @@ export default defineConfig({
   worker: {
     format: 'es'
   },
-  resolve: {
-    alias: {
-      'mammoth': 'mammoth/mammoth.browser.js'
-    }
-  },
   optimizeDeps: {
     include: ['pdfjs-dist']
   },
