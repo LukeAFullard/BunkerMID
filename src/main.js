@@ -10,10 +10,9 @@ const downloadBtn = document.getElementById('download-btn');
 const dropText = document.getElementById('drop-text');
 
 import ExtractionWorker from './extraction.worker.js?worker';
-import MarkitdownWorker from './markitdown.worker.js?worker';
 
 const extractionWorker = new ExtractionWorker();
-const markitdownWorker = new MarkitdownWorker();
+const markitdownWorker = new Worker(new URL('./markitdown.worker.js', import.meta.url), { type: 'module' });
 
 let currentFileName = 'document';
 let isExtracting = false;
