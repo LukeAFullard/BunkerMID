@@ -1,4 +1,4 @@
-import mammoth from 'mammoth/mammoth.browser.js';
+import mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
