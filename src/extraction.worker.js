@@ -4,6 +4,22 @@ import JSZip from 'jszip';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 
+// Polyfill for ReadableStream async iterator (needed for older Safari)
+if (typeof ReadableStream !== 'undefined' && !ReadableStream.prototype[Symbol.asyncIterator]) {
+  ReadableStream.prototype[Symbol.asyncIterator] = async function* () {
+    const reader = this.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) return;
+        yield value;
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  };
+}
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 // Suppress the fake worker warning as we are already in a worker
